@@ -421,11 +421,6 @@
                 <div class="type-card-title">自然</div>
                 <div class="type-card-desc">亲近自然环境</div>
             </div>
-            <div class="type-card" data-type="玩乐">
-                <div class="type-card-icon"><i class="fas fa-gamepad"></i></div>
-                <div class="type-card-title">玩乐</div>
-                <div class="type-card-desc">趣味游戏活动</div>
-            </div>
             <div class="type-card" data-type="技能">
                 <div class="type-card-icon"><i class="fas fa-brain"></i></div>
                 <div class="type-card-title">技能</div>
@@ -542,22 +537,9 @@
 
         // 获取下一个活动
         function getNextActivity() {
-            const filteredActivities = selectedType === "通用" ? 
-                activities : 
-                activities.filter(a => a.type === selectedType || a.type === "通用");
-            
-            // 如果没有符合条件的活动，返回第一个通用活动
-            if (filteredActivities.length === 0) {
-                return activities[0];
-            }
-
-            // 在过滤后的活动列表中查找当前活动的索引
-            const currentIndexInFiltered = filteredActivities.findIndex(a => a.title === currentActivity.title);
-            
-            // 计算下一个索引，如果到达末尾则回到开始
-            const nextIndex = (currentIndexInFiltered + 1) % filteredActivities.length;
-            
-            return filteredActivities[nextIndex];
+            // 直接使用currentActivityIndex在activities数组中循环
+            currentActivityIndex = (currentActivityIndex + 1) % activities.length;
+            return activities[currentActivityIndex];
         }
 
         // 更新活动卡片
