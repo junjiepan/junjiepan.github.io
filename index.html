@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>恢复能量的100件小事</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.5;
+            font-size: 14px;
+            min-height: 100vh;
+            max-width: 414px; /* 适合大多数手机屏幕 */
+            margin: 0 auto;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 按钮通用样式 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: #ff9966; /* 活力橙色 */
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #666;
+        }
+
+        /* 页面容器 */
+        .page {
+            position: absolute;
+            width: 100%;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page.hidden {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        .page.current {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* 标题栏样式 */
+        .header {
+            padding: 16px;
+            text-align: center;
+            position: relative;
+            background-color: white;
+            border-bottom: 1px solid #f0f0f0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #333;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* 首页样式 */
+        #home-page {
+            text-align: center;
+            justify-content: space-between;
+            background-color: #fffaf5;
+        }
+
+        .home-logo {
+            margin-top: 40px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff7e5f;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .home-image {
+            width: 80%;
+            max-width: 300px;
+            margin: 20px auto;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .home-start {
+            margin: 40px auto;
+            width: 80%;
+            max-width: 280px;
+        }
+
+        /* 类型选择页样式 */
+        #type-page {
+            background-color: #fff8f3;
+        }
+
+        .type-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 16px;
+            margin-top: 10px;
+        }
+
+        .type-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 110px;
+        }
+
+        .type-card.selected {
+            border-color: #ff9966;
+            box-shadow: 0 4px 12px rgba(255, 153, 102, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .type-card:active {
+            transform: scale(0.97);
+        }
+
+        .type-card-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #ff9966;
+        }
+
+        .type-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 4px;
+        }
+
+        .type-card-desc {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .type-footer {
+            padding: 16px;
+            text-align: center;
+            margin-top: auto;
+            margin-bottom: 30px;
+        }
+
+        /* 活动推荐页样式 */
+        #activity-page {
+            background-color: #fff5f0;
+        }
+
+        .activity-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .activity-card {
+            width: 90%;
+            background-color: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            transform-origin: center;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        .activity-image {
+            width: 100%;
+            height: 0;
+            padding-bottom: 100%; /* 1:1比例 */
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .activity-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .activity-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .activity-card.exit {
+            transform: translateX(-120%) rotate(-10deg);
+            opacity: 0;
+        }
+
+        .activity-card.enter {
+            animation: cardEnter 0.5s forwards;
+        }
+
+        @keyframes cardEnter {
+            from {
+                transform: translateX(120%) rotate(10deg);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .activity-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+            line-height: 1.3;
+        }
+
+        .activity-desc {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            white-space: pre-line; /* 保留换行符 */
+        }
+
+        .activity-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background-color: #fff3e0;
+            color: #ff9966;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .activity-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        /* 动画效果 */
+        .fade-in {
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 确认选择后的反馈 */
+        .activity-confirmed {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .activity-confirmed.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .confirm-icon {
+            font-size: 50px;
+            color: #4caf50;
+            margin-bottom: 16px;
+        }
+
+        .confirm-text {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .share-btn {
+            display: flex;
+            align-items: center;
+            padding: 8px 20px;
+            background-color: #55acee;
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .share-btn i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 首页 -->
+    <div id="home-page" class="page current">
+        <div class="home-logo">恢复能量的100件小事</div>
+        <img src="https://images.unsplash.com/photo-1606041008023-472dfb5e530f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=736&q=80" alt="恢复能量插图" class="home-image">
+        <div class="home-start">
+            <button id="start-btn" class="btn btn-primary" style="width: 100%;">
+                <i class="fas fa-seedling" style="margin-right: 8px;"></i>开始体验
+            </button>
+        </div>
+    </div>
+
+    <!-- 活动类型选择页 -->
+    <div id="type-page" class="page hidden">
+        <div class="header">
+            <button class="back-btn" onclick="showPage('home-page')">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h1>选择活动类型</h1>
+        </div>
+        <div class="type-grid">
+            <div class="type-card" data-type="通用">
+                <div class="type-card-icon"><i class="fas fa-star"></i></div>
+                <div class="type-card-title">通用</div>
+                <div class="type-card-desc">适合所有人的活动</div>
+            </div>
+            <div class="type-card" data-type="新奇体验">
+                <div class="type-card-icon"><i class="fas fa-lightbulb"></i></div>
+                <div class="type-card-title">新奇体验</div>
+                <div class="type-card-desc">尝试新鲜事物</div>
+            </div>
+            <div class="type-card" data-type="自然">
+                <div class="type-card-icon"><i class="fas fa-leaf"></i></div>
+                <div class="type-card-title">自然</div>
+                <div class="type-card-desc">亲近自然环境</div>
+            </div>
+            <div class="type-card" data-type="玩乐">
+                <div class="type-card-icon"><i class="fas fa-gamepad"></i></div>
+                <div class="type-card-title">玩乐</div>
+                <div class="type-card-desc">趣味游戏活动</div>
+            </div>
+            <div class="type-card" data-type="技能">
+                <div class="type-card-icon"><i class="fas fa-brain"></i></div>
+                <div class="type-card-title">技能</div>
+                <div class="type-card-desc">学习新技能</div>
+            </div>
+            <div class="type-card" data-type="文化艺术">
+                <div class="type-card-icon"><i class="fas fa-palette"></i></div>
+                <div class="type-card-title">文化艺术</div>
+                <div class="type-card-desc">艺术文化体验</div>
+            </div>
+            <div class="type-card" data-type="DIY手工">
+                <div class="type-card-icon"><i class="fas fa-cut"></i></div>
+                <div class="type-card-title">DIY手工</div>
+                <div class="type-card-desc">亲手制作的乐趣</div>
+            </div>
+        </div>
+        <div class="type-footer">
+            <button id="random-btn" class="btn btn-primary">
+                <i class="fas fa-random" style="margin-right: 8px;"></i>随机选择
+            </button>
+        </div>
+    </div>
+
+    <!-- 活动推荐页 -->
+    <div id="activity-page" class="page hidden">
+        <div class="header">
+            <button class="back-btn" onclick="showPage('type-page')">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <h1>今日推荐</h1>
+        </div>
+        <div class="activity-container">
+            <div class="activity-card enter">
+                <div class="activity-image">
+                    <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" alt="爬山活动">
+                </div>
+                <div class="activity-title">爬山</div>
+                <div class="activity-desc">爬山带给你的，
+远不止是健康的身体。
+亲近大自然，呼吸清新空气，
+能量随着每一次深呼吸而回归。
+踏步间，感受花草树木的生机勃勃，
+登顶后，俯瞰山川，心旷神怡。
+疲惫一扫而空，
+压力释放无遗。</div>
+                <div class="activity-tag">#自然</div>
+                
+                <div class="activity-confirmed">
+                    <div class="confirm-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="confirm-text">已选择今日活动</div>
+                    <button class="share-btn">
+                        <i class="fas fa-share-alt"></i>分享给朋友
+                    </button>
+                </div>
+            </div>
+            
+            <div class="activity-buttons">
+                <button id="change-btn" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt" style="margin-right: 8px;"></i>换一个
+                </button>
+                <button id="confirm-btn" class="btn btn-primary">
+                    <i class="fas fa-check" style="margin-right: 8px;"></i>确认选择
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 活动数据
+        const activities = [
+            
+            {
+                title: "爬山",
+                description: "爬山带给你的，\n远不止是健康的身体。\n亲近大自然，呼吸清新空气，\n能量随着每一次深呼吸而回归。\n踏步间，感受花草树木的生机勃勃，\n登顶后，俯瞰山川，心旷神怡。\n疲惫一扫而空，\n压力释放无遗。",
+                type: "自然",
+                image: "https://images.unsplash.com/photo-1551632811-561732d1e306?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                title: "射箭",
+                description: "拉开弓弦，凝神聚气，\n全心投入当下的一箭。\n在紧绷与释放的瞬间，\n你的注意力高度集中，\n杂念不再纷扰。\n箭离弦而去的那一刻，\n压力也随之消散，\n留下的是平静与成就感。",
+                type: "新奇体验",
+                image: "https://imgos.cn/uploads/20250508/eee8eedb54a8fb97be1c04be89675bfc.jpg"
+            },
+            {
+                title: "学习一首新歌",
+                description: "选择一首你喜欢的歌曲，\n用心去学习歌词和旋律。\n当你沉浸在音乐中，全情投入地演唱，\n会感到一种特别的满足和释放。\n音乐有治愈心灵的力量，\n让你忘却疲惫，焕发活力。",
+                type: "技能",
+                image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+            },
+            {
+                title: "写感恩日记",
+                description: "每天花5分钟，\n记录3件你感恩的事情。\n可以是今天发生的小确幸，\n也可以是一直被忽略的日常幸福。\n当你专注于生活中的美好，\n会发现能量不知不觉回归，\n心情变得更加明亮。",
+                type: "通用",
+                image: "https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
+            }
+        ];
+
+        // 变量初始化
+        let currentPage = "home-page";
+        let selectedType = "通用";
+        let currentActivity = activities[0];
+        let currentActivityIndex = 0; // 添加当前活动索引
+
+        // 页面切换函数
+        function showPage(pageId) {
+            document.getElementById(currentPage).classList.remove("current");
+            document.getElementById(currentPage).classList.add("hidden");
+            
+            document.getElementById(pageId).classList.remove("hidden");
+            document.getElementById(pageId).classList.add("current");
+            
+            currentPage = pageId;
+        }
+
+        // 获取下一个活动
+        function getNextActivity() {
+            const filteredActivities = selectedType === "通用" ? 
+                activities : 
+                activities.filter(a => a.type === selectedType || a.type === "通用");
+            
+            // 如果没有符合条件的活动，返回第一个通用活动
+            if (filteredActivities.length === 0) {
+                return activities[0];
+            }
+
+            // 在过滤后的活动列表中查找当前活动的索引
+            const currentIndexInFiltered = filteredActivities.findIndex(a => a.title === currentActivity.title);
+            
+            // 计算下一个索引，如果到达末尾则回到开始
+            const nextIndex = (currentIndexInFiltered + 1) % filteredActivities.length;
+            
+            return filteredActivities[nextIndex];
+        }
+
+        // 更新活动卡片
+        function updateActivityCard() {
+            const card = document.querySelector(".activity-card");
+            
+            // 添加退出动画
+            card.classList.add("exit");
+            
+            setTimeout(() => {
+                // 更新内容
+                currentActivity = getNextActivity();
+                document.querySelector(".activity-title").textContent = currentActivity.title;
+                document.querySelector(".activity-desc").textContent = currentActivity.description;
+                document.querySelector(".activity-tag").textContent = "#" + currentActivity.type;
+                document.querySelector(".activity-image img").src = currentActivity.image;
+                document.querySelector(".activity-image img").alt = currentActivity.title + "活动";
+                
+                // 移除退出动画，添加进入动画
+                card.classList.remove("exit");
+                card.classList.remove("enter");
+                void card.offsetWidth; // 触发重绘
+                card.classList.add("enter");
+            }, 300);
+        }
+
+        // 事件监听
+        document.addEventListener("DOMContentLoaded", function() {
+            // 开始体验按钮
+            document.getElementById("start-btn").addEventListener("click", function() {
+                showPage("type-page");
+            });
+            
+            // 类型选择卡片
+            const typeCards = document.querySelectorAll(".type-card");
+            typeCards.forEach(card => {
+                card.addEventListener("click", function() {
+                    // 移除其他卡片的选中状态
+                    typeCards.forEach(c => c.classList.remove("selected"));
+                    // 添加当前卡片的选中状态
+                    this.classList.add("selected");
+                    // 更新选中的类型
+                    selectedType = this.dataset.type;
+                });
+            });
+            
+            // 默认选中"通用"类型
+            document.querySelector('.type-card[data-type="通用"]').classList.add("selected");
+            
+            // 随机选择按钮
+            document.getElementById("random-btn").addEventListener("click", function() {
+                showPage("activity-page");
+                // 更新活动卡片
+                updateActivityCard();
+            });
+            
+            // 换一个按钮
+            document.getElementById("change-btn").addEventListener("click", function() {
+                updateActivityCard();
+            });
+            
+            // 确认选择按钮
+            document.getElementById("confirm-btn").addEventListener("click", function() {
+                document.querySelector(".activity-confirmed").classList.add("active");
+            });
+            
+            // 分享按钮
+            document.querySelector(".share-btn").addEventListener("click", function() {
+                alert("分享功能模拟：已生成分享图片，可发送给好友或分享到朋友圈");
+            });
+        });
+    </script>
+</body>
+</html> 
